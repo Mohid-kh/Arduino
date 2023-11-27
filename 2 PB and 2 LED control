@@ -1,0 +1,58 @@
+#include <Arduino.h>
+
+#define buttonPin_1 PC6             // Push Button 1
+#define buttonPin_2 PC7             // Push Button 2
+#define ledPin_1    PD10            // LED  pin    1
+#define ledPin_2    PD12            // LED  pin    2
+
+volatile bool ledOn_1 = false;      // Track the state of LED 1 
+volatile bool ledOn_2 = false;      // Track the state of LED 2
+
+void buttonRead1_ISR();
+void buttonRead2_ISR();
+
+void setup()
+{
+  
+  pinMode(buttonPin_1, INPUT_PULLUP);   // PB1 as Input (Pulled up)
+  pinMode(buttonPin_2, INPUT_PULLUP);   // PB2 as Input (Pulled up)
+  pinMode(ledPin_1, OUTPUT);            // Led1 as Output 
+  pinMode(ledPin_2, OUTPUT);            // Led2 as Output
+
+  attachInterrupt(digitalPinToInterrupt(buttonPin_1), buttonRead1_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(buttonPin_2), buttonRead2_ISR, FALLING);
+
+}
+
+void loop()
+{
+
+  if(ledOn_1 == true)
+  { 
+    digitalWrite(ledPin_1, HIGH);
+    delay(500);
+    digitalWrite(ledPin_1, LOW);
+    delay(500);
+  }
+  else if(ledOn_2 == true)
+  {
+    digitalWrite(ledPin_2, HIGH);
+    delay(500);
+    digitalWrite(ledPin_2, LOW);
+    delay(500);
+  }
+}
+
+void buttonRead1_ISR(void)              // ISR for PB1 to turn off PB1
+{
+      delayMicroseconds(60000);
+      ledOn_1 = !ledOn_1;        
+      ledOn_2 = false;
+} 
+void buttonRead2_ISR(void)              // ISR for PB1 to turn off PB1
+{
+      delayMicroseconds(60000);
+      ledOn_2 = !ledOn_2;   
+      ledOn_1 = false;
+} 
+
